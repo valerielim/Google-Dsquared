@@ -1,3 +1,7 @@
+# Made by: Valerie Lim
+# Date: ??
+# Title: Analytics Applications with R, using Campaign data as testset
+
 install.packages('dplyr')
 install.packages('googleVis')
 install.packages('lubridate')
