@@ -1,6 +1,6 @@
 # Made by: Valerie
 # Date: 19 July 2017 (Wed)
-# Title: Plot formulas using local graphs on R 
+# Title: Template formulas for ploting graphs using ggplot2 and native on R
 
 
 # Dataset: Iris (native) 
