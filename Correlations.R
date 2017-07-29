@@ -3,7 +3,7 @@
 # Title: Making a Correlation matrix with P values
 
 # ----------------  Making a Correlation matrix with P values ---------------- #
-# ----------------------------------- END ------------------------------------ #
+
 install.packages("Hmisc")
 library(Hmisc)
 ?rcorr
@@ -19,5 +19,3 @@ cor(iris_num[,unlist(lapply(iris_num, is.numeric))])
 # Version 2 - correlations using RCORR
 # Prints p value too, so more useful than COR
 rcorr(as.matrix(iris_num))
-
-# ----------------------------------- END ------------------------------------ #
