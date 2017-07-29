@@ -82,8 +82,8 @@ CPVP_full <- dplyr::summarize(group_by(data, month_clean),
                               CPVP = total_cost/total_viewedprods)
 
 CPVP_value <- dplyr::summarize(group_by(data, month_clean), 
-								CPVP = sum(Cost, na.rm=TRUE)
-								/sum(No.of.products.viewed, na.rm=TRUE))
+			       CPVP = sum(Cost, na.rm=TRUE)
+			       /sum(No.of.products.viewed, na.rm=TRUE))
 CPVP_value
 
 # Group by Month, CPBP
