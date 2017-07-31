@@ -1,5 +1,5 @@
 # Made by: Valerie Lim
-# Date: ??
+# Date: 20 July 2017, Thursday
 # Title: Analytics Applications with R, using Campaign data as testset
 
 
