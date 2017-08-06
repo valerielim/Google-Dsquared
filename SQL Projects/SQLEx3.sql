@@ -1,7 +1,7 @@
 -- Title: SQL Practice Exercises
 -- Made by Valerie Lim
 -- Date: 28 July 2017
--- Contents: Aggregate functions: GROUP BY, HAVING, CASE
+-- Contents: Aggregate functions GROUP BY, HAVING, CASE
 
 # ------------------------------- EXERCISE 3 ------------------------------- #
 
