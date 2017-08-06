@@ -1,7 +1,7 @@
 -- Title: SQL Practice Exercises
 -- Made by Valerie Lim
 -- Date: 28 July 2017
--- Contents: SUBQUERIES
+-- Contents: SUBQUERIES with JOINS
 
 # ------------------------------- EXERCISE 5 ------------------------------- #
 
