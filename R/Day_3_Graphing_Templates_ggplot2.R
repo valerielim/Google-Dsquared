@@ -2,9 +2,8 @@
 # Date: 19 July 2017 (Wed)
 # Title: Template formulas for ploting graphs using ggplot2 and native on R
 
-
+# ----------------------------------------------------------------------------- #
 # Dataset: Iris (native) 
-
 
 ###### GGPLOT2
 
@@ -38,7 +37,7 @@ boxplot = ggplot(iris, aes(Species, Sepal.Width, fill = Species)) +
 
 
 
-
+# ----------------------------------------------------------------------------- #
 ###### R NATIVE PLOTS
 
 # Scatterplot, NO colours
@@ -92,6 +91,7 @@ barplot(data_set, horiz=TRUE,
         legend = rownames(data_set))
 
 
+# ----------------------------------------------------------------------------- #
 ###### BONUS / EXTRA
 
 # Count number of species in Table
