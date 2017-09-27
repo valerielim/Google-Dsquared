@@ -117,7 +117,7 @@ Improvement: +0.0248963
 # 95 percent confidence interval: 0.6740394 0.7208483
 # Final probability of success: 0.6978275 
 
-Improvement: +0.2662922
+Improvement: +26.6%
 ```
 
 ### 6th(B) Attempt - Grabtaxi Dataset
@@ -138,13 +138,61 @@ Improvement: +0.2662922
 # 95 percent confidence interval: 0.6928107 0.7395618
 # Final probability of success: 0.7166213 
 
-Improvement: +0.285086
+Improvement: +28.5%
 ```
+
+### 7th(A) Attempt - Uber Dataset
+
+* Trinary labels [`positive`, `negative`, `neutral`]
+* Sample size `n=1391`,*removed non-timeperiod data*
+* Support features converted to `numeric`; sentiments should be as `factor`
+* Support features: `count(Vneg)`, `count(neg)`, `count(pos)`, `count(Vpos)`, `num_words`, `net_score`, 
+`mean sentiment score`
+
+| 7 | Actual negative | Actual neutral | Actual positive | Total |
+| ---- | ------------ | -------------- | --------------- | ----- |
+| predicted negative | 131 | 29 | 11 | 171 (15%)
+| predicted neutral | 238 | 749 | 140 | 1127 (81%)
+| predicted positive | 7 | 16 | 79 | 102 (7%)
+| Total | 376 (27%) | 794 (57%) | 221 (16%)
+
+```
+# 95 percent confidence interval: 0.6740394 0.7208483
+# Final probability of success: 0.6978275 
+```
+
+
+
+### 7th(B) Attempt - Grabtaxi Dataset
+
+* Trinary labels [`positive`, `negative`, `neutral`]
+* Sample size `n=1237`, *removed non-timeperiod data*
+* Support features converted to `numeric`; sentiments should be as `factor`
+* Support features: `count(Vneg)`, `count(neg)`, `count(pos)`, `count(Vpos)`, `num_words`, `net_score`, 
+`mean sentiment score`
+
+| 7 | Actual negative | Actual neutral | Actual positive | Total | 
+| ---- | ------------ | -------------- | --------------- | ----- |
+| predicted negative | 33 |  6 |  13 | 52 (4%)
+| predicted neutral | 162 | 698 | 222 | 1082 (87%)
+| predicted positive | 12 | 12 | 79 | 103 (8%)
+| Total | 207 (17%) | 716 (58%) | 334 (27%)
+
+```
+# 95 percent confidence interval: 0.6577817 0.7073668
+# Final probability of success: 0.6829619 
+```
+
+
+
+
+
 
 # Conclusion
 
+* NB skews heavily toward neutral, poor at detecting positive emotion
 * Keep support features to `factors` where possible; (eg. for standard features like `days of week` with only 7 options)
-* Build more support features where possible; `num_words` and `net_score` most useful; throw all into machine anyway?
+* For other support features, leave as numeric
 * `MAX_ENTROPY` model shows most promise, but can't seem to make it work with trinary labels. 
 
 Overall mostly satisfied with model 6's accuracy considering that trinary labels have 33% chance of guessing correct; 
