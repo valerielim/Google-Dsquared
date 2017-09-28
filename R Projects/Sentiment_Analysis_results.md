@@ -157,12 +157,9 @@ Improvement: +28.5%
 | Total | 376 (27%) | 794 (57%) | 221 (16%)
 
 ```
-# 95 percent confidence interval: 0.6740394 0.7208483
-# Final probability of success: 0.6978275 
+# 95 percent confidence interval: 0.6577817 0.7073668
+# Final probability of success: 0.6829619 
 ```
-
-
-
 ### 7th(B) Attempt - Grabtaxi Dataset
 
 * Trinary labels [`positive`, `negative`, `neutral`]
@@ -179,13 +176,46 @@ Improvement: +28.5%
 | Total | 207 (17%) | 716 (58%) | 334 (27%)
 
 ```
-# 95 percent confidence interval: 0.6577817 0.7073668
-# Final probability of success: 0.6829619 
+# 95 percent confidence interval: 0.6275680 0.6813139
+# Final probability of success: 0.65481
+```
+### 8th(A) Attempt - Uber Dataset
+
+* Trinary labels [`positive`, `negative`, `neutral`]
+* Sample size `n=1391`,*removed non-timeperiod data*
+* Support features converted to `numeric`; sentiments should be as `factor`
+* Support features: `count(Vneg)`, `count(neg)`, `count(pos)`, `count(Vpos)`, `num_words`, 
+`mean sentiment score` (AFINN), `SentimentR` 
+
+| 8 | Actual negative | Actual neutral | Actual positive |
+| ---- | ------------ | -------------- | --------------- |
+| predicted negative | 57 | 17 | 8 |
+| predicted neutral | 126 | 659 | 137 | 
+| predicted positive | 24 | 40 | 169 |
+
+```
+# 95 percent confidence interval: 0.6894006 0.7404522
+# Final probability of success: 0.7154406 
 ```
 
+### 8th(B) Attempt - Grabtaxi Dataset
 
+* Trinary labels [`positive`, `negative`, `neutral`]
+* Sample size `n=1237`, *removed non-timeperiod data*
+* Support features converted to `numeric`; sentiments should be as `factor`
+* Support features: `count(Vneg)`, `count(neg)`, `count(pos)`, `count(Vpos)`, `num_words`, `net_score`, 
+`mean sentiment score`
 
+| 8 | Actual negative | Actual neutral | Actual positive | 
+| ---- | ------------ | -------------- | --------------- | 
+| predicted negative | 192 |  53 |  14 | 
+| predicted neutral | 168 | 666 | 101 |
+| predicted positive | 16 | 75 | 106 |
 
+```
+# 95 percent confidence interval: 0.6680392 0.7171959
+# Final probability of success: 0.6930266 
+```
 
 
 # Conclusion
