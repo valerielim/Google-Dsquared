@@ -175,14 +175,14 @@ import pprint
 pp = pprint.PrettyPrinter(indent=2)
 
 # Passwords
-Username = 'lonely_dingleberry'
-Password = 'Passw0rd!1'
-Client_ID = 'cOuv_433uGowhg'
-Client_secret = 'Lck5D8FGEiDyrngC6_mgODA5yXU'
+Username = x
+Password = x
+Client_ID = x
+Client_secret = x
 
 # Auth
 print "Preparing reddit authentication to extract comment details per post..."
-reddit = praw.Reddit(user_agent='Testing stuff for school project (by /u/lonely_dingleberry)',
+reddit = praw.Reddit(user_agent='x (by /u/lonely_dingleberry)',
                      client_id=Client_ID, client_secret=Client_secret,
                      username=Username, password=Password)
 print "Done."
@@ -231,7 +231,7 @@ def get_comments(ID_list):
     return holder
 
 # Get IDs of all relevant posts from CSV file
-print "Extracting child comments from parent post list. This will take awhile..."
+print "Extracting child comments from parent post list of", num_IDs, "posts. This will take awhile..."
 print 
 child_comments = get_comments(ID_list)
 pp.pprint(child_comments)
