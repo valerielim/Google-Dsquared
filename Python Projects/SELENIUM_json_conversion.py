@@ -25,25 +25,26 @@ time.sleep(10) # To allow file to finish downloading
 chrome.quit()
 
 # -------------------------------------------------------------------- # 
+# This shit keeps returning .tmp file, not sure why
 
-import time
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait 
-from selenium.webdriver.support import expected_conditions as EC
+# import time
+# from selenium import webdriver
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.support.ui import WebDriverWait 
+# from selenium.webdriver.support import expected_conditions as EC
 
-chrome = webdriver.Chrome()
-chrome.get('https://json-csv.com/');
+# chrome = webdriver.Chrome()
+# chrome.get('https://json-csv.com/');
 
-# Load data
-load_data = chrome.find_element_by_id('fileupload')
-load_data.send_keys('C:\\Users\\valeriehy.lim\\Documents\\PythonDocs\\uglyjson.txt')
+# # Load data
+# load_data = chrome.find_element_by_id('fileupload')
+# load_data.send_keys('C:\\Users\\valeriehy.lim\\Documents\\PythonDocs\\uglyjson.txt')
 
-# Download result
-time.sleep(10) 
-get_results = chrome.find_element_by_id('download-link')
-get_results.click()
-chrome.quit()
+# # Download result
+# time.sleep(10) 
+# get_results = chrome.find_element_by_id('download-link')
+# get_results.click()
+# chrome.quit()
 
 # -------------------------------------------------------------------- # 
 # Shit that doesn't work
