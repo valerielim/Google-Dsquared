@@ -13,12 +13,31 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 chrome = webdriver.Chrome()
+chrome.get('https://json-csv.com/')
+load_data = chrome.find_element_by_id('fileupload') 
+load_data.send_keys('C:\\Users\\valeriehy.lim\\Documents\\PythonDocs\\uglyjson.txt')
+
+
+wait = WebDriverWait(chrome, 10)
+wait.until(EC.element_to_be_clickable((By.ID, 'convert-another')))
+chrome.find_element_by_css_selector("a#download-link.btn-lg.btn-success").click()
+time.sleep(10) # To allow file to finish downloading
+chrome.quit()
+
+# -------------------------------------------------------------------- # 
+
+import time
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait 
+from selenium.webdriver.support import expected_conditions as EC
+
+chrome = webdriver.Chrome()
 chrome.get('https://json-csv.com/');
 
 # Load data
 load_data = chrome.find_element_by_id('fileupload')
 load_data.send_keys('C:\\Users\\valeriehy.lim\\Documents\\PythonDocs\\uglyjson.txt')
-# load_data.submit()
 
 # Download result
 time.sleep(10) 
