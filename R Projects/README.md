@@ -1,8 +1,7 @@
 # Currently Working on... 
 
-* Understand why `set.seed()` works
-* Facebook API through python `praw` - build supra-general script for json conversion
-* Navigating Reddit API
+* Dashboards stuff?
+* Selenium stuff
 
 # General Projects to complete
 
@@ -12,7 +11,6 @@
 # Non-work stuff
 
 * Kaggle competition - Start with Titanic tutorial
-* Build HLSG dashboard? Of all 3 rounds of data?
 
 # Completed
 
@@ -24,10 +22,13 @@
 * Figure out how to apply other classifiers (esp `MAX_ENT`) to *trinary* data
 * Figure out how to print results of `MAX_ENT` classifier for unlabelled data
 * Learn how to use `set.seed()` on dataframes
-* Figure out Twitter API
-* Figure out Reddit API 
+* Figure out Twitter API (R)
+
+# Python stuff 
+
+* Figure out Reddit API (Python)
+* Facebook API through python `praw` - build supra-general script for json conversion
 
 # Discard
 
-1. Find & implement a topic modelling script (if possible)
-1. Shiny dashboards
+1. Find & implement a topic modelling script (if possible - edit: not feasible w limited data)
