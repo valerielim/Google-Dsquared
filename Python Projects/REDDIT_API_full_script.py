@@ -1,4 +1,8 @@
-# Task: Extract Reddit data from single keyword to all child comments
+# Task: Extract all Reddit data matching a keyword/ search parameter
+# Date: ?? Nov 2017
+# Creator: Valerie Lim
+
+### Process outline 
 
 # 1. Construct URL params for API query
 # 2. Call API for json data
@@ -8,59 +12,99 @@
 # 6. Store comment data as csv file. 
 
 # ---------------------------------------------------------------------------- #
+
+# Input your stuff here!!
+# Don't edit the rest
+
+### Section 1 Rules:
+# > Input any amount of words
+# > Names are not case sensitive
+# > Separate names with ,
+# > Names must be wrapped with ''
+
+keyword_input = ['jaguar',
+                 'car'] 
+subreddits_input = ['Jaguar', 
+                    'Jaguars',
+                    'cars',
+                    'jaguarcars',
+                    'carporn',
+                    'cars',
+                    'autos',
+                    'spotted',
+                    'formula1',
+                    'classiccars',
+                    'Shitty_Car_Mods']
+
+### Section 2 Rules:
+# > Only one selection allowed
+# > Selection must be wrapped with ''
+
+time_input = 'all' # day, week, month, year, all
+sort_input = 'new' # new, top, hot, rising, controversial
+limit_input = '9999999' # default: maximum
+
+# ---------------------------------------------------------------------------- #
+
+
+
+
+
+# ---------------------------------------------------------------------------- #
+# 0. Functionality testing
+
+def test_case(query, expected_output):
+    if query == expected_output:
+        status = "Function works."
+    else:
+        status = "Function doesn't return expected output."
+    return status 
+
+# ---------------------------------------------------------------------------- #
 # 1. Construct URL params for API query
 
 import os
-
-# Set up workspace
 path = 'C:\\Users\\valeriehy.lim\\Documents\\PythonDocs'
 os.chdir(path)
-print "#1. Set directory to", path
 
-# Search keywords
-print
-print "# ------------------------------------------------ #"
-print "#2. REDDIT QUERY DIMENSIONS"
-keyword_input = ['jaguar']
-keyword_list = "+".join(keyword_input)
-print "Keyword is:", keyword_list
+# Function to assemble reddit query; do not edit
+def assemble_reddit_query(keyword_input, subreddits_input, time_input, 
+                          sort_input, limit_input, after_input=None):
 
-# Subreddit input
-subreddits_label = "subreddit:"
-subreddits_input = ['Jaguar', 'Jaguars', 'cars', 'jaguarcars', 'carporn', 
-                'cars', 'autos', 'spotted', 'formula1', 'classiccars',
-                'Shitty_Car_Mods'] # Not case sensitive
-subreddits_list = "+".join(subreddits_input)
-print "Subreddits are:", subreddits_input
+    # Join items in list up
+    keyword_list = "+".join(keyword_input)
+    subreddits_list = "+".join(subreddits_input)
 
-# T (time) options: //hour, day, week, month, year, all//
-time_label = "&t="
-time_input = "all"
-print "Time frame is:", time_input
+    # Labels (don't edit this)
+    time_label = "&t="
+    sort_label = "&sort="
+    limit_label = "&limit="
+    after_label = "&after="
+    
+    # Frame (don't edit this)
+    start = 'http://www.reddit.com/r/'
+    middle = '/search.json?q='
+    end = '&restrict_sr=TRUE' # search only this subreddit(s)
 
-# SORT options: //relevance, hot, top, new, comments//
-sort_label = "&sort="
-sort_input = "new"
-print "Sort frame is:", sort_input
+    if after_input is None: 
+        full_link = "%s%s%s%s%s%s%s%s%s%s%s" % (start,
+        subreddits_list, middle, keyword_list, time_label, time_input,
+        sort_label, sort_input, limit_label, limit_input, end)
+    else:
+        full_link = "%s%s%s%s%s%s%s%s%s%s%s%s%s" % (start,
+        subreddits_list, middle, keyword_list, time_label, time_input,
+        sort_label, sort_input, limit_label, limit_input,
+        after_label, after_input, end)
+    return full_link
 
-# LIMIT options: must be digits, keep enclosed within " "
-limit_label = "&limit="
-limit_input = "9999999" # default: max
-print "Limit range is:", limit_input
+query1 = assemble_reddit_query(keyword_input, subreddits_input, time_input, sort_input, limit_input)
+output1 = "http://www.reddit.com/r/Jaguar+Jaguars+cars+jaguarcars+carporn+cars+autos+spotted+formula1+classiccars+Shitty_Car_Mods/search.json?q=jaguar&t=all&sort=new&limit=9999999&restrict_sr=TRUE"
 
-# Frame (don't edit this)
-start = 'http://www.reddit.com/r/'
-middle = '/search.json?q='
-end = '&restrict_sr=TRUE' # search only this subreddit(s)
+query2 = assemble_reddit_query(keyword_input, subreddits_input, time_input, sort_input, limit_input, after_input="t3_75ur03")
+output2 = "http://www.reddit.com/r/Jaguar+Jaguars+cars+jaguarcars+carporn+cars+autos+spotted+formula1+classiccars+Shitty_Car_Mods/search.json?q=jaguar&t=all&sort=new&limit=9999999&after=t3_75ur03&restrict_sr=TRUE"
 
-# Assemble it
-full_link = "%s%s%s%s%s%s%s%s%s%s%s" % (start,
- subreddits_list, middle, keyword_list, time_label, time_input,
- sort_label, sort_input, limit_label, limit_input, end)
-print
-print "The query is:", full_link
-print "# ------------------------------------------------ #"
-print
+# print test_case(query1, output1)
+# print test_case(query2, output2)
 
 # ---------------------------------------------------------------------------- #
 # 2. Call API for json data
@@ -69,30 +113,60 @@ import urllib2
 import json
 import yaml
 import fileinput
+import time 
 
-print "#3. Calling API for above query..."
-print 
-response = urllib2.urlopen(full_link)
-print "Call successful."
-print "Loading response into local environment..."
-print 
-data = json.load(response)
-clean_data = json.dumps(data)
-cleaner_data = yaml.safe_load(clean_data) # a long dict, only 4 global env
-print "Response data load completed."
-print 
+def call_reddit(query):
+    # Get data
+    request = urllib2.Request(query)
+    request.add_header('User-Agent', 'Chrome/61.0.3163.100 +http://diveintopython.org/')
+    opener = urllib2.build_opener()
+    print "Calling API, please wait..."
+    data = opener.open(request).read()
 
-# Save file
-print "#4. Saving response as JSON file..."
-txt_file_name = 'uglyjson.txt'
-myfile = open(txt_file_name, 'w' )
-myfile.write(clean_data)
-myfile.close()
-print "Complete."
-print 
-print "File saved as", txt_file_name, "in location", path
-print "# ------------------------------------------------ #"
-print
+    # Convert data
+    data = json.loads(data)
+    data = json.dumps(data)
+    data = yaml.safe_load(data)
+    print "# >>> Reddit data has been retrieved."
+    return data
+
+def save_to_text_file(variable, file_number):
+    # Saves json string to .txt file inside your home directory. 
+    file_name = 'uglyjson_%s.txt' % (file_number)
+    myfile = open(file_name, 'w' )
+    myfile.write(repr(variable))
+    myfile.close()
+    print "# >>> File has been saved as", file_name
+    return file_name
+
+def loop_through_all_reddit_pages(query):
+    # Loops through all pages of reddit query, stores each page as new .txt json file.
+    print "BEGIN RETRIEVAL PROCESS"
+    print 
+    file_number = 1
+    print query
+    data = call_reddit(query)
+    file_name = save_to_text_file(variable=data, file_number=file_number)
+    print
+    
+    # Save all text filenames for later to convert them to csv
+    file_names = []
+    file_names.append(file_name)
+    after_key = data['data']['after']
+    
+    # ALL OTHER PASSES
+    while len(str(after_key))>=6: # A legal post key has at least 6 char
+        file_number = file_number + 1
+        print "Loop number", file_number
+        query = assemble_reddit_query(keyword_input, subreddits_input,
+                          time_input, sort_input, limit_input, after_input=after_key)
+        data = call_reddit(query)
+        file_name = save_to_text_file(variable=data, file_number=file_number)
+        file_names.append(file_name)
+        after_key = data['data']['after']
+        print 
+    print "END PROCESS."
+    return file_names
 
 # ---------------------------------------------------------------------------- #
 # 3. Convert json data to csv file
