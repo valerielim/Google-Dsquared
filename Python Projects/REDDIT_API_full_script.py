@@ -1,29 +1,30 @@
 # Task: Extract all Reddit data matching a keyword/ search parameter
-# Date: ?? Nov 2017
+# Date: 10 Nov 2017
 # Creator: Valerie Lim
 
 ### Process outline 
 
 # 1. Construct URL params for API query
 # 2. Call API for json data
-# 3. Convert json data to csv file
-# 4. Clean csv file to get list of post IDs
-# 5. Extract comments and details for each post ID
-# 6. Store comment data as csv file. 
+# 3. Extract list of post IDs from data
+# 5. Extract comments and details for each post from its own post ID
+# 6. Store comment data as csv file
 
 # ---------------------------------------------------------------------------- #
 
-# Input your stuff here!!
-# Don't edit the rest
+# EDIT THIS PART!! 
+# Fill in params for your search here :-)
 
-### Section 1 Rules:
+### Rules:
 # > Input any amount of words
 # > Names are not case sensitive
 # > Separate names with ,
 # > Names must be wrapped with ''
 
 keyword_input = ['jaguar',
-                 'car'] 
+                 'car',
+                 'singapore'] 
+
 subreddits_input = ['Jaguar', 
                     'Jaguars',
                     'cars',
@@ -48,7 +49,14 @@ limit_input = '9999999' # default: maximum
 
 
 
+# ---------------------------------------------------------------------------- #
+# Execution -- DONT TOUCH THIS PART ONWARDS
 
+pp = pprint.PrettyPrinter(indent=1, width=80)        
+query = assemble_reddit_query(keyword_input, subreddits_input, time_input, sort_input, limit_input)
+post_ids = loop_through_reddit_for_post_ids(query)
+comments = get_comments(post_ids)
+comments.to_csv("pretty_json.csv", sep=',')
 
 # ---------------------------------------------------------------------------- #
 # 0. Functionality testing
@@ -61,17 +69,11 @@ def test_case(query, expected_output):
     return status 
 
 # ---------------------------------------------------------------------------- #
-# 1. Construct URL params for API query
+# 1. Construct query
 
-import os
-path = 'C:\\Users\\valeriehy.lim\\Documents\\PythonDocs'
-os.chdir(path)
-
-# Function to assemble reddit query; do not edit
 def assemble_reddit_query(keyword_input, subreddits_input, time_input, 
                           sort_input, limit_input, after_input=None):
 
-    # Join items in list up
     keyword_list = "+".join(keyword_input)
     subreddits_list = "+".join(subreddits_input)
 
@@ -80,12 +82,11 @@ def assemble_reddit_query(keyword_input, subreddits_input, time_input,
     sort_label = "&sort="
     limit_label = "&limit="
     after_label = "&after="
-    
-    # Frame (don't edit this)
     start = 'http://www.reddit.com/r/'
     middle = '/search.json?q='
     end = '&restrict_sr=TRUE' # search only this subreddit(s)
 
+    # Assemble
     if after_input is None: 
         full_link = "%s%s%s%s%s%s%s%s%s%s%s" % (start,
         subreddits_list, middle, keyword_list, time_label, time_input,
@@ -97,17 +98,17 @@ def assemble_reddit_query(keyword_input, subreddits_input, time_input,
         after_label, after_input, end)
     return full_link
 
-query1 = assemble_reddit_query(keyword_input, subreddits_input, time_input, sort_input, limit_input)
-output1 = "http://www.reddit.com/r/Jaguar+Jaguars+cars+jaguarcars+carporn+cars+autos+spotted+formula1+classiccars+Shitty_Car_Mods/search.json?q=jaguar&t=all&sort=new&limit=9999999&restrict_sr=TRUE"
+# Test cases
+# query = assemble_reddit_query(keyword_input, subreddits_input, time_input, sort_input, limit_input)
+# output = "http://www.reddit.com/r/Jaguar+Jaguars+cars+jaguarcars+carporn+cars+autos+spotted+formula1+classiccars+Shitty_Car_Mods/search.json?q=jaguar&t=all&sort=new&limit=9999999&restrict_sr=TRUE"
+# query_b = assemble_reddit_query(keyword_input, subreddits_input, time_input, sort_input, limit_input, after_input="t3_75ur03")
+# output_b = "http://www.reddit.com/r/Jaguar+Jaguars+cars+jaguarcars+carporn+cars+autos+spotted+formula1+classiccars+Shitty_Car_Mods/search.json?q=jaguar&t=all&sort=new&limit=9999999&after=t3_75ur03&restrict_sr=TRUE"
 
-query2 = assemble_reddit_query(keyword_input, subreddits_input, time_input, sort_input, limit_input, after_input="t3_75ur03")
-output2 = "http://www.reddit.com/r/Jaguar+Jaguars+cars+jaguarcars+carporn+cars+autos+spotted+formula1+classiccars+Shitty_Car_Mods/search.json?q=jaguar&t=all&sort=new&limit=9999999&after=t3_75ur03&restrict_sr=TRUE"
-
-# print test_case(query1, output1)
-# print test_case(query2, output2)
+# print test_case(query, output)
+# print test_case(query_b, output_b)
 
 # ---------------------------------------------------------------------------- #
-# 2. Call API for json data
+# 2. Call API for post_ids that match query
 
 import urllib2
 import json
@@ -116,137 +117,79 @@ import fileinput
 import time 
 
 def call_reddit(query):
-    # Get data
+    # Get data from API
     request = urllib2.Request(query)
     request.add_header('User-Agent', 'Chrome/61.0.3163.100 +http://diveintopython.org/')
-    opener = urllib2.build_opener()
-    print "Calling API, please wait..."
+    opener = urllib2.build_opener()  
     data = opener.open(request).read()
+    return data
 
-    # Convert data
+def safe_load(data):
+    # Convert raw data from API call to json, remove utf-formatting
     data = json.loads(data)
     data = json.dumps(data)
     data = yaml.safe_load(data)
-    print "# >>> Reddit data has been retrieved."
     return data
 
 def save_to_text_file(variable, file_number):
-    # Saves json string to .txt file inside your home directory. 
+    # Save variable to text file in home directory
     file_name = 'uglyjson_%s.txt' % (file_number)
     myfile = open(file_name, 'w' )
-    myfile.write(repr(variable))
+    myfile.write(variable)
     myfile.close()
-    print "# >>> File has been saved as", file_name
+    print "File has been saved as", file_name
     return file_name
 
-def loop_through_all_reddit_pages(query):
-    # Loops through all pages of reddit query, stores each page as new .txt json file.
-    print "BEGIN RETRIEVAL PROCESS"
-    print 
-    file_number = 1
-    print query
+def extract_ids(data):
+    num_posts = len(data['data']['children']) 
+    print "Number of posts in this search:", num_posts
+    post_ids = []
+    for post in range(num_posts):
+        post_id = data['data']['children'][post]['data']['id']
+        post_ids.append(post_id)
+    return post_ids
+
+def loop_through_reddit_for_post_ids(query):
+
+    # >> calls API for data
+    # >> Extracts all post IDs
+    # >> Extracts key for "next" page
+    # >> loops through all subsequent "next" pages to collect post IDs
+    
+    file_number = 1; print "Loop number", file_number
     data = call_reddit(query)
-    file_name = save_to_text_file(variable=data, file_number=file_number)
+    data = safe_load(data)
+
+    post_ids = extract_ids(data); print "Post ID extracted successfully."
+    after_key = data['data']['after']; print after_key
     print
     
-    # Save all text filenames for later to convert them to csv
-    file_names = []
-    file_names.append(file_name)
-    after_key = data['data']['after']
-    
-    # ALL OTHER PASSES
-    while len(str(after_key))>=6: # A legal post key has at least 6 char
-        file_number = file_number + 1
-        print "Loop number", file_number
+    while len(str(after_key))>=6:  # Legal key has at least 6 char
+        file_number = file_number + 1; print "Loop number", file_number
         query = assemble_reddit_query(keyword_input, subreddits_input,
-                          time_input, sort_input, limit_input, after_input=after_key)
+                                    time_input, sort_input, limit_input,
+                                    after_input=after_key)
         data = call_reddit(query)
-        file_name = save_to_text_file(variable=data, file_number=file_number)
-        file_names.append(file_name)
-        after_key = data['data']['after']
-        print 
-    print "END PROCESS."
-    return file_names
+        data = safe_load(data)
+
+        more_post_ids = extract_ids(data); print "Post ID extracted successfully."
+        after_key = data['data']['after']; print after_key
+        post_ids.append(more_post_ids)
+        print  # line break
+
+    return post_ids
 
 # ---------------------------------------------------------------------------- #
-# 3. Convert json data to csv file
-
-# pip install selenium first
-# install chromedriver.exe too
-
-import time
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait 
-from selenium.webdriver.support import expected_conditions as EC
-
-print "#5. Loading selenium with chrome driver for conversion..."
-print
-chrome = webdriver.Chrome()
-chrome.get('https://json-csv.com/')
-load_data = chrome.find_element_by_id('fileupload')
-
-print "Uploading JSON file for conversion..."
-print
-# file_location = "%s\\%s" % (path, txt_file_name)
-load_data.send_keys('C:\\Users\\valeriehy.lim\\Documents\\PythonDocs\\uglyjson.txt')
-
-# Download converted csv
-print "Waiting for file conversion to be complete..."
-print 
-wait = WebDriverWait(chrome, 10)
-import sys 
-for i in xrange(10,0,-1): # Prints countdown from 10 9 8 ...
-    time.sleep(1)
-    sys.stdout.write(str(i)+' ')
-    sys.stdout.flush()
-wait.until(EC.element_to_be_clickable((By.ID, 'convert-another')))
-chrome.find_element_by_css_selector("a#download-link.btn-lg.btn-success").click()
-time.sleep(10) # To allow time to finish downloading
-chrome.quit()
-print 
-print "Csv file downloaded, location at DOWNLOADS folder."
-print "# ------------------------------------------------ #"
-print
-
-# ---------------------------------------------------------------------------- #
-# 4. Clean csv file to get list of post IDs
-
-import pandas as pd
-import os
-import glob
-
-downloads_folder = 'C:\\Users\\valeriehy.lim\\Downloads'
-file_type = '*.csv'
-files_to_sort = glob.glob('%s\\%s' % (downloads_folder, file_type) )
-
-latest_file = max(files_to_sort, key=os.path.getctime)
-file_name = str(latest_file[33:])
-print "#6. Reading csv file with reddit posts from:", file_name
-print 
-
-data = pd.read_csv(latest_file)
-ID_list = data['data__children__data__id'].tolist()
-ID_list = [x for x in ID_list if str(x) != 'nan']
-num_IDs = len(ID_list)
-print "#Extracting list of relevant reddit post IDs:"
-print ID_list
-print
-print "There were", num_IDs, "valid posts in this query."
-print 
-
-# ---------------------------------------------------------------------------- #
-# 5. Extract comments and details for each post ID
+# 3. Extract comments and details for each post ID
 
 import praw
+from praw.models import MoreComments
+
 import requests
 import requests.auth
 import pandas as pd
-from praw.models import MoreComments
-
-from tqdm import * 
+import datetime
 import pprint
-pp = pprint.PrettyPrinter(indent=2)
 
 # Passwords
 Username = x
@@ -255,27 +198,28 @@ Client_ID = x
 Client_secret = x
 
 # Auth
-print "Preparing reddit authentication to extract comment details per post..."
-reddit = praw.Reddit(user_agent='x (by /u/lonely_dingleberry)',
+reddit = praw.Reddit(user_agent='Testing stuff for school project (by /u/lonely_dingleberry)',
                      client_id=Client_ID, client_secret=Client_secret,
                      username=Username, password=Password)
-print "Done."
-print
 
-# Date
-import datetime
 def get_date(submission):
     time = submission.created
     return datetime.datetime.fromtimestamp(time)
     # Source: https://www.reddit.com/r/learnprogramming/comments/37kr5n/praw_is_it_possible_to_get_post_time_and_date/
 
-# Extraction function
-def get_comments(ID_list):
+def get_comments(post_ids):
+
+    # Extracts these information from a post:
+    # >>>>> post title
+    # >>>>> post ID
+    # >>>>> child comments 
+    # >>>>> author of child comment
+    # >>>>> date created for each comment
+    # Lastly: Bind as csv file 
     
-    # Empty df to store comments as returned in loop below
     holder = pd.DataFrame()
-    # Extract comment, author and date for each post
-    for post_ID in tqdm(ID_list):
+    for post_ID in post_ids:
+
         # Source: https://praw.readthedocs.io/en/v5.2.0/tutorials/comments.html#extracting-comments-with-praw
         print "Reading post", post_ID 
         submission = reddit.submission(id=post_ID)
@@ -296,16 +240,14 @@ def get_comments(ID_list):
             c_headers.append([C, A, D])
 
         # Add labels to identify which comments belong to which post
-        c_table = pd.DataFrame(c_headers, columns=['Comment', 'Author', 'Date']).set_index('Date')
         post_title = submission.title
+
+        c_table = pd.DataFrame(c_headers, columns=['Comment', 'Author', 'Date']).set_index('Date')
         c_table['Post_ID'] = post_ID
         c_table['Post_title'] = post_title
         holder = holder.append(c_table)
         
     return holder
 
-# Get IDs of all relevant posts from CSV file
-print "Extracting child comments from parent post list of", num_IDs, "posts. This will take awhile..."
-print 
-child_comments = get_comments(ID_list)
-pp.pprint(child_comments)
+# ---------------------------------------------------------------------------- #
+
